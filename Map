@@ -12,7 +12,7 @@
 <body>
     <div id="map"></div>
 
-    
+    <!-- Додаємо кнопки перемикачі -->
     <div id="map-controls">
         <button onclick="changeMap('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')">OpenStreetMap</button>
         <button onclick="changeMap('http://88.99.52.156/tmg/{z}/{x}/{y}')">Custom Map</button>
@@ -22,15 +22,44 @@
     <script>
         var map;
 
-        
+        // Ініціалізуємо мапу
         function initMap() {
-            map = L.map('map').setView([51.505, -0.09], 13);
+            map = L.map('map').setView([50.4501, 30.5234], 13); // Місто Київ, координати [широта, довгота]
 
-            
+            // Завантажуємо карту OpenStreetMap за замовчуванням
             changeMap('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+            // Додаємо кастомний маркер з попапом
+            var customMarker = L.marker([50.4501, 30.5234]).addTo(map)
+                .bindPopup("<b>Місто Київ</b><br>Ласкаво просимо!");
+
+            // Додаємо складну фігуру (п'ятикутник)
+            var polygonPoints = [
+                [50.448, 30.520],
+                [50.448, 30.525],
+                [50.452, 30.528],
+                [50.454, 30.523],
+                [50.45, 30.52]
+            ];
+
+            var polygon = L.polygon(polygonPoints, {color: 'green'}).addTo(map);
+            polygon.bindPopup("Це складна фігура");
+
+            // Додаємо Layer Control
+            var baseMaps = {
+                "OpenStreetMap": L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                "Custom Map": L.tileLayer('http://88.99.52.156/tmg/{z}/{x}/{y}')
+            };
+
+            var overlayMaps = {
+                "Маркер Києва": customMarker,
+                "Складна фігура": polygon
+            };
+
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
         }
 
-        
+        // Функція для зміни фону мапи
         function changeMap(url) {
             if (map) {
                 map.eachLayer(function (layer) {
@@ -43,7 +72,7 @@
             }).addTo(map);
         }
 
-        
+        // Викликаємо функцію ініціалізації мапи при завантаженні сторінки
         window.onload = initMap;
     </script>
 </body>
